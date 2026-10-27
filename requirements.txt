@@ -1,0 +1,22 @@
+# Core Computer Vision (Mandatory for OpenCV 2026 Agentic Vision Track)
+opencv-python>=5.0.0.0
+numpy>=2.0.0
+
+# Cloud & Storage Integrations
+boto3>=1.34.0
+botocore>=1.34.0
+
+# Web Application & Microservices
+flask>=2.3.0
+pyjwt>=2.8.0
+sqlalchemy>=2.0.0
+cryptography>=41.0.0
+psutil>=5.9.0
+python-dotenv>=1.0.0
+
+# LLM & Specialist Swarm Engine (Optional local model inference)
+torch>=2.0.0
+transformers>=4.35.0
+accelerate>=0.25.0
+scipy>=1.10.0
+protobuf>=3.20.0

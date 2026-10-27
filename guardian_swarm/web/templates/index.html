@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guardian CV — Agentic Visual Inspection & Investigation</title>
+    <meta name="description" content="Guardian CV: Competition-grade agentic visual inspection powered by OpenCV 5. Evidence-driven anomaly detection and verification for OpenCV 2026.">
+    <meta name="keywords" content="Guardian CV, OpenCV 5, agentic vision, visual inspection, anomaly detection, computer vision">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}?v=4.0.0">
+    <style>
+        /* ─────────────────────────────────────────────────────────────
+           GUARDIAN CV OVERRIDE — Product Identity & CV-Specific Styles
+           ───────────────────────────────────────────────────────────── */
+
+        /* Top Bar override */
+        .brand-title { font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 17px; letter-spacing: -0.3px; }
+        .brand-cv-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #f97316, #fb923c);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            padding: 1px 6px;
+            border-radius: 3px;
+            margin-left: 4px;
+            vertical-align: middle;
+            text-transform: uppercase;
+        }
+
+        /* CV Hero Banner */
+        .cv-hero {
+            background: linear-gradient(135deg, rgba(249,115,22,0.08) 0%, rgba(0,0,0,0) 60%);
+            border-bottom: 1px solid rgba(249,115,22,0.15);
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        .cv-hero-left { display: flex; flex-direction: column; gap: 2px; }
+        .cv-hero-title { font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 10px; }
+        .cv-hero-sub { font-size: 12px; color: #9ca3af; }
+        .cv-hero-badges { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .cv-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+            border: 1px solid; white-space: nowrap;
+        }
+        .cv-badge-orange { border-color: rgba(249,115,22,0.4); color: #f97316; background: rgba(249,115,22,0.08); }
+        .cv-badge-green  { border-color: rgba(34,197,94,0.4);  color: #22c55e; background: rgba(34,197,94,0.08); }
+        .cv-badge-blue   { border-color: rgba(59,130,246,0.4); color: #60a5fa; background: rgba(59,130,246,0.08); }
+        .cv-badge-purple { border-color: rgba(139,92,246,0.4); color: #a78bfa; background: rgba(139,92,246,0.08); }
+        .cv-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+        /* Workspace Grid */
+        .cv-workspace-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr 340px;
+            height: calc(100vh - 130px);
+            overflow: hidden;
+        }
+        @media (max-width: 1100px) {
+            .cv-workspace-grid { grid-template-columns: 260px 1fr 300px; }
+        }
+
+        /* Panels */
+        .cv-panel { overflow-y: auto; }
+        .cv-panel-left  { background: var(--bg-panel); border-right: 1px solid var(--border-color); padding: 14px; }
+        .cv-panel-center { padding: 14px; background: var(--bg-page); display: flex; flex-direction: column; gap: 12px; }
+        .cv-panel-right { background: var(--bg-panel); border-left: 1px solid var(--border-color); padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+
+        /* Section headers */
+        .cv-section-label {
+            font-size: 10px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--text-muted); margin-bottom: 10px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .cv-section-label::after {
+            content: ''; flex: 1; height: 1px; background: var(--border-color);
+        }
+
+        /* Dropzones */
+        .cv-dropzone {
+            border: 2px dashed var(--border-color); border-radius: 10px;
+            padding: 14px; text-align: center; cursor: pointer;
+            background: var(--bg-card); transition: all 0.2s;
+            min-height: 80px; display: flex; align-items: center; justify-content: center; flex-direction: column;
+        }
+        .cv-dropzone:hover { border-color: #f97316; background: rgba(249,115,22,0.05); }
+        .cv-dropzone.dragover { border-color: #f97316; background: rgba(249,115,22,0.1); }
+        .cv-dropzone-icon { color: var(--text-muted); margin-bottom: 6px; }
+        .cv-dropzone p { font-size: 12px; color: var(--text-secondary); }
+
+        /* Evidence display */
+        .cv-evidence-box {
+            flex: 1; min-height: 320px; background: #050505;
+            border: 1px solid var(--border-color); border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+        }
+        .cv-evidence-placeholder { color: var(--text-muted); text-align: center; padding: 24px; }
+
+        /* Toggle buttons */
+        .cv-view-toggle-bar { display: flex; gap: 4px; flex-wrap: wrap; }
+        .cv-toggle-btn {
+            padding: 4px 12px; font-size: 11px; border-radius: 5px;
+            background: #1a1a1a; color: #aaa; border: 1px solid #333;
+            cursor: pointer; transition: all 0.15s; font-weight: 500;
+        }
+        .cv-toggle-btn.active { background: #f97316; color: #fff; border-color: #f97316; }
+        .cv-toggle-btn:hover:not(.active) { border-color: #f97316; color: #f97316; }
+
+        /* Verdict card */
+        .cv-verdict-card {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 10px; padding: 14px;
+        }
+        .cv-verdict-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
+        .cv-verdict-value { font-size: 16px; font-weight: 700; margin: 4px 0 6px; font-family: 'Outfit', sans-serif; }
+        .cv-verdict-summary { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+
+        /* Trace timeline */
+        .cv-trace-item {
+            padding: 8px 10px; background: var(--bg-card);
+            border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 6px;
+            animation: fadeSlideIn 0.3s ease;
+        }
+        .cv-trace-step-header { color: #f97316; font-weight: 600; font-size: 11px; display: flex; align-items: center; gap: 6px; }
+        .cv-trace-step-detail { color: #9ca3af; margin-top: 3px; font-size: 11px; line-height: 1.4; }
+        .cv-trace-step-icon { font-size: 12px; }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Buttons */
+        .cv-btn-primary {
+            width: 100%; padding: 11px; background: linear-gradient(135deg, #f97316, #ea6e0b);
+            color: #fff; border: none; border-radius: 8px; font-weight: 700;
+            cursor: pointer; display: flex; justify-content: center; align-items: center;
+            gap: 8px; font-size: 13px; transition: all 0.2s; font-family: 'Outfit', sans-serif;
+        }
+        .cv-btn-primary:hover:not(:disabled) { background: linear-gradient(135deg, #fb923c, #f97316); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(249,115,22,0.3); }
+        .cv-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .cv-btn-secondary {
+            padding: 7px 14px; background: #1a1a1a; border: 1px solid #333;
+            color: #ccc; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.2s;
+        }
+        .cv-btn-secondary:hover { border-color: #f97316; color: #f97316; }
+
+        /* Sidebar navigation */
+        .cv-nav-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 12px; border-radius: 7px; cursor: pointer;
+            font-size: 13px; color: var(--text-secondary);
+            background: transparent; border: none; width: 100%;
+            text-align: left; transition: all 0.15s;
+        }
+        .cv-nav-item:hover { background: var(--bg-hover); color: #fff; }
+        .cv-nav-item.active { background: rgba(249,115,22,0.12); color: #f97316; font-weight: 600; }
+        .cv-nav-badge {
+            margin-left: auto; background: #ef4444; color: #fff;
+            font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px;
+            min-width: 18px; text-align: center;
+        }
+
+        /* History entries */
+        .cv-history-item {
+            padding: 9px 10px; border-radius: 7px; cursor: pointer;
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            margin-bottom: 6px; transition: all 0.15s;
+        }
+        .cv-history-item:hover { border-color: #f97316; }
+        .cv-history-id { font-size: 10px; color: var(--text-muted); font-family: var(--font-mono); }
+        .cv-history-verdict { font-size: 12px; font-weight: 600; margin-top: 2px; }
+        .cv-history-time { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
+        /* Inspect area loading state */
+        .cv-loading-bar {
+            position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, transparent, #f97316, transparent);
+            background-size: 200% 100%; animation: shimmer 1.2s linear infinite;
+        }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+        .pulsing-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #f97316; animation: pulse-dot 1s infinite; }
+        @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.7)} }
+
+        /* Right panel telemetry hidden by default on CV view */
+        .cv-active #sidebar-right { display: none; }
+
+        /* Inspection history panel */
+        .cv-history-panel {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg-panel); z-index: 10;
+            padding: 14px; overflow-y: auto;
+            display: none;
+        }
+
+        /* Metrics row */
+        .cv-metrics-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+        .cv-metric-pill {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 6px; padding: 6px 12px; font-size: 11px;
+            display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 80px;
+        }
+        .cv-metric-label { color: var(--text-muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .cv-metric-value { color: #fff; font-weight: 600; font-family: var(--font-mono); font-size: 13px; }
+
+        /* Select styling for CV panel */
+        .cv-select {
+            width: 100%; background: var(--bg-card); color: #fff;
+            border: 1px solid var(--border-color); padding: 9px; border-radius: 7px;
+            font-size: 13px; cursor: pointer; outline: none;
+        }
+        .cv-select:focus { border-color: #f97316; }
+
+        /* Spectral evidence row */
+        .cv-spectral-card {
+            background: var(--bg-card); border: 1px solid rgba(139,92,246,0.25);
+            border-radius: 8px; padding: 12px;
+        }
+        .cv-spectral-title { font-size: 10px; color: #a78bfa; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; font-weight: 600; }
+
+        /* OpenCV logo-style eye icon */
+        .cv-eye-icon { color: #f97316; }
+
+        /* Cloud status */
+        .cv-cloud-row {
+            border-top: 1px solid var(--border-color); padding-top: 10px;
+            display: flex; flex-direction: column; gap: 6px;
+        }
+        .cv-cloud-status { font-size: 11px; color: #22c55e; }
+
+        /* Secondary panel tabs */
+        .cv-right-tabs { display: flex; gap: 4px; margin-bottom: 12px; }
+        .cv-right-tab {
+            flex: 1; padding: 6px; background: var(--bg-card); border: 1px solid var(--border-color);
+            color: var(--text-muted); border-radius: 6px; cursor: pointer; font-size: 11px;
+            text-align: center; font-weight: 500; transition: all 0.15s;
+        }
+        .cv-right-tab.active { background: rgba(249,115,22,0.1); border-color: #f97316; color: #f97316; }
+
+        /* Secondary Views & Visibility */
+        .main-view { display: none; width: 100%; height: 100%; overflow-y: auto; }
+        .main-view.active { display: flex !important; flex-direction: column; }
+        .main-view.hidden-view { display: none !important; }
+        #view-chat-main.active { display: flex !important; flex-direction: column; height: 100%; overflow: hidden; }
+        #view-chat-main .chat-messages-area { flex: 1; overflow-y: auto; display: flex; flex-direction: column; padding: 1.5rem; }
+        #view-admin.active { display: flex !important; flex-direction: column; height: 100%; overflow-y: auto; padding: 1.5rem; }
+        .secondary-view { display: none; }
+
+        /* Competition tag */
+        .cv-competition-tag {
+            font-size: 10px; font-weight: 700; color: #a78bfa;
+            letter-spacing: 0.5px; text-transform: uppercase;
+            background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.2);
+            padding: 2px 8px; border-radius: 4px;
+        }
+
+        /* Sidebar right collapse hidden in cv mode */
+        .right-sidebar-hidden #sidebar-right { width: 0; overflow: hidden; }
+    </style>
+</head>
+<body class="app-body">
+
+    <!-- ═══════════════════════════════════════════════════════
+         TOP BAR  — Guardian CV Identity
+         ═══════════════════════════════════════════════════════ -->
+    <header class="top-bar">
+        <!-- LEFT: Brand -->
+        <div class="top-left">
+            <button id="top-toggle-left-sidebar" class="top-bar-toggle-btn" title="Toggle Navigation">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>
+            </button>
+            <div class="brand">
+                <!-- Guardian CV Eye-Shield Logo -->
+                <svg class="svg-icon shield-logo" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2.2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    <circle cx="12" cy="12" r="3" fill="rgba(249,115,22,0.3)" stroke="#f97316" stroke-width="1.5"/>
+                    <circle cx="12" cy="12" r="1" fill="#f97316" stroke="none"/>
+                </svg>
+                <span class="brand-title">Guardian <span style="color:#f97316;">CV</span></span>
+                <span class="brand-cv-badge">OpenCV 5</span>
+            </div>
+        </div>
+
+        <!-- CENTRE: Status -->
+        <div class="top-centre">
+            <div id="top-gate-pill" class="gate-status-pill all-good" title="Vision Engine Status">
+                <span class="status-dot"></span>
+                <span id="cv-engine-status-text">👁 Vision Engine Ready</span>
+            </div>
+        </div>
+
+        <!-- RIGHT: Controls -->
+        <div class="top-right">
+            <span class="cv-competition-tag">OpenCV 2026</span>
+
+            <!-- Settings -->
+            <button id="btn-open-settings" class="top-btn" title="Settings">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+            </button>
+            <div class="user-avatar-circle" id="top-user-avatar">CV</div>
+        </div>
+    </header>
+
+    <!-- ═══════════════════════════════════════════════════════
+         THREE-PANEL APP CONTAINER
+         ═══════════════════════════════════════════════════════ -->
+    <div class="app-container" id="app-container">
+
+        <!-- ─────────────── LEFT SIDEBAR: Navigation ─────────────── -->
+        <aside id="sidebar-left" class="history-sidebar">
+            <div class="sidebar-top" style="padding: 12px 10px;">
+                <!-- Product Logo in sidebar -->
+                <div style="display:flex; align-items:center; gap:8px; padding: 8px 6px 14px; border-bottom: 1px solid var(--border-color); margin-bottom: 12px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" style="width:20px;height:20px;flex-shrink:0;">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <circle cx="12" cy="12" r="3" fill="rgba(249,115,22,0.2)" stroke="#f97316" stroke-width="1.5"/>
+                    </svg>
+                    <div>
+                        <div style="font-family:'Outfit',sans-serif; font-weight:800; font-size:14px; color:#fff;">Guardian <span style="color:#f97316;">CV</span></div>
+                        <div style="font-size:10px; color:var(--text-muted);">Agentic Visual Inspection</div>
+                    </div>
+                </div>
+
+                <!-- Primary Actions -->
+                <button id="btn-new-inspection" class="new-chat-btn" style="background:rgba(249,115,22,0.12);border:1px solid rgba(249,115,22,0.25);color:#f97316;font-weight:700;width:100%;padding:9px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;transition:all 0.2s;" onmouseenter="this.style.background='rgba(249,115,22,0.2)'" onmouseleave="this.style.background='rgba(249,115,22,0.12)'">
+                    <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                    New Inspection
+                </button>
+            </div>
+
+            <!-- Navigation Links -->
+            <div class="sidebar-bottom-nav" style="padding: 0 6px; gap: 2px; display:flex; flex-direction:column;">
+                <!-- PRIMARY — Guardian CV -->
+                <button class="cv-nav-item active" data-view="cv-inspector" id="nav-cv-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/></svg>
+                    <span>Visual Inspector</span>
+                    <span style="margin-left:auto; font-size:9px; background:rgba(249,115,22,0.2); color:#f97316; padding:1px 5px; border-radius:3px; font-weight:700;">PRIMARY</span>
+                </button>
+
+                <button class="cv-nav-item" data-view="cv-history" id="nav-history-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;flex-shrink:0;"><path d="M3 3h7v7H3z"/><path d="M14 3h7v7h-7z"/><path d="M14 14h7v7h-7z"/><path d="M3 14h7v7H3z"/></svg>
+                    <span>Inspection History</span>
+                    <span class="cv-nav-badge" id="nav-history-count" style="display:none;">0</span>
+                </button>
+
+                <div style="height:1px; background:var(--border-color); margin: 8px 6px;"></div>
+                <div style="font-size:10px; color:var(--text-muted); padding: 4px 12px; text-transform:uppercase; letter-spacing:0.5px;">Secondary Tools</div>
+
+                <button class="cv-nav-item" data-view="chat-main" id="nav-chat-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;flex-shrink:0;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    <span>AI Assistant</span>
+                </button>
+
+                <button class="cv-nav-item" data-view="escalations">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;flex-shrink:0;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    <span>Escalations</span>
+                    <span class="cv-nav-badge" id="sidebar-escalation-badge" style="display:none;">0</span>
+                </button>
+
+                <button class="cv-nav-item" data-view="ledger">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;flex-shrink:0;"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    <span>Audit Ledger</span>
+                </button>
+
+                <button class="cv-nav-item manager-only-link" data-view="admin" id="sidebar-admin-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;flex-shrink:0;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                    <span>Admin</span>
+                </button>
+            </div>
+
+            <!-- Runtime Info at bottom -->
+            <div style="margin-top:auto; padding: 10px; border-top: 1px solid var(--border-color); font-size:10px; color:var(--text-muted); line-height:1.8;">
+                <div style="display:flex; justify-content:space-between;"><span>OpenCV</span><strong id="sidebar-cv-version" style="color:#22c55e;">5.0.0</strong></div>
+                <div style="display:flex; justify-content:space-between;"><span>AWS Vault</span><strong id="sidebar-aws-status" style="color:#9ca3af;">Checking...</strong></div>
+                <div style="display:flex; justify-content:space-between;"><span>Product</span><strong style="color:#f97316;">Guardian CV 1.0</strong></div>
+            </div>
+
+            <button id="btn-toggle-left-sidebar" class="sidebar-collapse-btn left-collapse" title="Toggle Sidebar">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+        </aside>
+
+        <!-- ─────────────── MAIN AREA ─────────────── -->
+        <main class="center-main-area" style="position:relative; overflow:hidden;">
+
+            <!-- ══════════════════════════════════════════════════
+                 PRIMARY VIEW: GUARDIAN CV AGENTIC VISION WORKSPACE
+                 ══════════════════════════════════════════════════ -->
+            <div id="view-cv-inspector" class="main-view active" style="display:flex;flex-direction:column;height:100%;overflow:hidden;">
+
+                <!-- CV Hero Banner -->
+                <div class="cv-hero">
+                    <div class="cv-hero-left">
+                        <div class="cv-hero-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" style="width:22px;height:22px;">
+                                <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/>
+                            </svg>
+                            Agentic Visual Inspection
+                        </div>
+                        <div class="cv-hero-sub">Evidence-driven closed-loop anomaly detection &amp; verification · Powered by OpenCV 5</div>
+                    </div>
+                    <div class="cv-hero-badges">
+                        <span class="cv-badge cv-badge-orange"><span class="cv-badge-dot"></span>OpenCV 5.0 Verified</span>
+                        <span class="cv-badge cv-badge-green" id="cv-aws-badge"><span class="cv-badge-dot"></span>AWS: Sandboxed</span>
+                        <span class="cv-badge cv-badge-purple">🏆 OpenCV 2026 Submission</span>
+                        <button id="btn-load-cv-samples" class="cv-btn-secondary" style="padding:4px 12px;">Load Benchmark</button>
+                    </div>
+                </div>
+
+                <!-- 3-PANEL WORKSPACE -->
+                <div class="cv-workspace-grid">
+
+                    <!-- ── LEFT: INPUTS & CONTROLS ── -->
+                    <div class="cv-panel cv-panel-left">
+                        <div class="cv-section-label">1 · Inspection Inputs</div>
+
+                        <!-- Reference Image -->
+                        <div style="margin-bottom: 12px;">
+                            <label style="display:block; font-size:11px; color:var(--text-muted); margin-bottom:5px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Reference (Baseline)</label>
+                            <div id="dropzone-ref" class="cv-dropzone" title="Click or drop image">
+                                <input type="file" id="input-ref-file" accept="image/*" style="display:none;">
+                                <div id="ref-preview-box" style="display:none; width:100%;">
+                                    <img id="ref-preview-img" style="max-width:100%; max-height:110px; border-radius:5px; object-fit:contain;">
+                                    <p id="ref-filename" style="font-size:10px; color:var(--text-secondary); margin-top:4px; text-align:center;"></p>
+                                </div>
+                                <div id="ref-placeholder" class="cv-dropzone-icon" style="display:flex;flex-direction:column;align-items:center;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:28px;height:28px;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                    <p>Click or drop reference image</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Current Image -->
+                        <div style="margin-bottom: 12px;">
+                            <label style="display:block; font-size:11px; color:var(--text-muted); margin-bottom:5px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Current (Inspection)</label>
+                            <div id="dropzone-curr" class="cv-dropzone" title="Click or drop image">
+                                <input type="file" id="input-curr-file" accept="image/*" style="display:none;">
+                                <div id="curr-preview-box" style="display:none; width:100%;">
+                                    <img id="curr-preview-img" style="max-width:100%; max-height:110px; border-radius:5px; object-fit:contain;">
+                                    <p id="curr-filename" style="font-size:10px; color:var(--text-secondary); margin-top:4px; text-align:center;"></p>
+                                </div>
+                                <div id="curr-placeholder" class="cv-dropzone-icon" style="display:flex;flex-direction:column;align-items:center;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:28px;height:28px;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                    <p>Click or drop inspection image</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Objective -->
+                        <div style="margin-bottom: 12px;">
+                            <label style="display:block; font-size:11px; color:var(--text-muted); margin-bottom:5px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Inspection Objective</label>
+                            <select id="cv-objective-select" class="cv-select">
+                                <option value="visual_change_investigation" selected>Industrial Visual Change Detection</option>
+                                <option value="surface_defect_verification">High-Precision Surface Defect Verification</option>
+                                <option value="component_alignment_audit">Component Alignment & Shift Audit</option>
+                            </select>
+                        </div>
+
+                        <!-- Settings -->
+                        <div style="margin-bottom: 16px;">
+                            <label style="display:block; font-size:11px; color:var(--text-muted); margin-bottom:5px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Sensitivity</label>
+                            <select id="cv-sensitivity-select" class="cv-select">
+                                <option value="standard" selected>Standard (Threshold: 35)</option>
+                                <option value="high">High Sensitivity (Threshold: 20)</option>
+                                <option value="extreme">Extreme Precision (Threshold: 10)</option>
+                            </select>
+                        </div>
+
+                        <!-- Run Button -->
+                        <button id="btn-start-cv-inspection" class="cv-btn-primary">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px;"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            Run Adaptive Inspection
+                        </button>
+
+                        <!-- Divider -->
+                        <div style="height:1px; background:var(--border-color); margin: 16px 0;"></div>
+
+                        <!-- Quick agent stats -->
+                        <div class="cv-section-label">Agent Status</div>
+                        <div style="font-size:11px; color:var(--text-secondary); line-height:1.9;">
+                            <div style="display:flex;justify-content:space-between;"><span>Loop Mode</span><strong style="color:#f97316; font-family:var(--font-mono);">OBSERVE→VERIFY</strong></div>
+                            <div style="display:flex;justify-content:space-between;"><span>Max Iterations</span><strong style="color:#fff; font-family:var(--font-mono);">5</strong></div>
+                            <div style="display:flex;justify-content:space-between;"><span>Algorithm</span><strong style="color:#60a5fa; font-family:var(--font-mono);">ORB+RANSAC</strong></div>
+                            <div style="display:flex;justify-content:space-between;"><span>Re-obs Tool</span><strong style="color:#a78bfa; font-family:var(--font-mono);">Spectral Edge</strong></div>
+                        </div>
+                    </div>
+
+                    <!-- ── CENTER: VISUAL EVIDENCE & OVERLAYS ── -->
+                    <div class="cv-panel cv-panel-center">
+                        <!-- Row 1: Toggle + Metrics -->
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                            <div style="font-size:12px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px;">2 · Visual Evidence & Overlays</div>
+                            <div class="cv-view-toggle-bar" id="cv-view-toggles">
+                                <button class="cv-toggle-btn active" data-img="annotated">Annotated</button>
+                                <button class="cv-toggle-btn" data-img="heatmap">Heatmap</button>
+                                <button class="cv-toggle-btn" data-img="diff_map">Diff Mask</button>
+                            </div>
+                        </div>
+
+                        <!-- Metrics Pills (hidden until result) -->
+                        <div id="cv-metrics-row" class="cv-metrics-row" style="display:none;">
+                            <div class="cv-metric-pill">
+                                <span class="cv-metric-label">Regions</span>
+                                <span class="cv-metric-value" id="metric-regions">—</span>
+                            </div>
+                            <div class="cv-metric-pill">
+                                <span class="cv-metric-label">Max Intensity</span>
+                                <span class="cv-metric-value" id="metric-intensity">—</span>
+                            </div>
+                            <div class="cv-metric-pill">
+                                <span class="cv-metric-label">Coverage</span>
+                                <span class="cv-metric-value" id="metric-coverage">—</span>
+                            </div>
+                            <div class="cv-metric-pill">
+                                <span class="cv-metric-label">Alignment</span>
+                                <span class="cv-metric-value" id="metric-alignment">—</span>
+                            </div>
+                        </div>
+
+                        <!-- Main Evidence Canvas -->
+                        <div id="cv-evidence-display" class="cv-evidence-box" style="flex:1;">
+                            <div id="cv-evidence-placeholder" class="cv-evidence-placeholder">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="width:56px;height:56px;opacity:0.2;margin:0 auto 12px;display:block;">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <circle cx="12" cy="12" r="4"/>
+                                    <line x1="21.17" y1="8" x2="12" y2="8"/>
+                                    <line x1="3.95" y1="6.06" x2="8.54" y2="14"/>
+                                    <line x1="10.88" y1="21.94" x2="15.46" y2="14"/>
+                                </svg>
+                                <div style="font-size:14px; color:var(--text-secondary); font-weight:500; margin-bottom:6px;">Ready to Inspect</div>
+                                <div style="font-size:12px; color:var(--text-muted); max-width:280px; margin:0 auto; line-height:1.6;">
+                                    Upload reference & inspection images, then click <strong style="color:#f97316;">Run Adaptive Inspection</strong> to begin the autonomous closed-loop vision analysis.
+                                </div>
+                            </div>
+                            <img id="cv-evidence-img" style="max-width:100%; max-height:100%; object-fit:contain; display:none; border-radius:4px;">
+                            <div id="cv-loading-bar" class="cv-loading-bar" style="display:none;"></div>
+                        </div>
+
+                        <!-- Spectral Re-Observation Evidence -->
+                        <div id="cv-spectral-row" style="display:none;">
+                            <div class="cv-spectral-card">
+                                <div class="cv-spectral-title">⚡ Adaptive Re-Observation — High-Res Spectral Edge Evidence</div>
+                                <div style="display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap;">
+                                    <img id="cv-spectral-composite-img" style="max-height:90px; border:1px solid #333; border-radius:4px;">
+                                    <div id="cv-spectral-metrics" style="font-size:11px; font-family:var(--font-mono); color:var(--text-secondary); line-height:1.8;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── RIGHT: DECISION TRACE & VERDICT ── -->
+                    <div class="cv-panel cv-panel-right">
+
+                        <!-- Right panel tabs -->
+                        <div class="cv-right-tabs">
+                            <button class="cv-right-tab active" data-rtab="trace">Decision Trace</button>
+                            <button class="cv-right-tab" data-rtab="regions">Regions</button>
+                        </div>
+
+                        <!-- === TAB: TRACE === -->
+                        <div id="rtab-trace" style="display:flex; flex-direction:column; gap:10px; flex:1; overflow:hidden;">
+
+                            <div class="cv-section-label">3 · Adaptive Decision Trace</div>
+
+                            <!-- Verdict Card -->
+                            <div id="cv-verdict-card" class="cv-verdict-card">
+                                <div class="cv-verdict-label">Status / Verdict</div>
+                                <div id="cv-verdict-title" class="cv-verdict-value" style="color:#fff;">Awaiting Inspection</div>
+                                <p id="cv-verdict-summary" class="cv-verdict-summary">Autonomous closed-loop agent stands ready to observe and verify visual evidence.</p>
+                            </div>
+
+                            <!-- Trace Timeline -->
+                            <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Perception-Decision-Action Trace</div>
+                            <div id="cv-trace-timeline" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:4px;">
+                                <div style="color:var(--text-muted); font-size:11px; font-family:var(--font-mono);">(Trace populates as OpenCV 5 tools execute)</div>
+                            </div>
+
+                            <!-- Export & Cloud -->
+                            <div class="cv-cloud-row">
+                                <div id="cv-cloud-status" class="cv-cloud-status">✔ Audit Ledger Ready</div>
+                                <button id="btn-export-cv-report" class="cv-btn-secondary" style="width:100%; text-align:center;">
+                                    📄 Export Forensic Evidence JSON
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- === TAB: REGIONS === -->
+                        <div id="rtab-regions" style="display:none; flex:1; overflow-y:auto;">
+                            <div class="cv-section-label">Detected Anomaly Regions</div>
+                            <div id="cv-regions-list" style="display:flex; flex-direction:column; gap:6px; font-size:11px;">
+                                <div style="color:var(--text-muted); font-family:var(--font-mono);">(Run inspection to view detected regions)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══════════════════════════════════════════════════
+                 VIEW: INSPECTION HISTORY
+                 ══════════════════════════════════════════════════ -->
+            <div id="view-cv-history" class="main-view hidden-view">
+                <div class="full-view-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding:1rem 1.5rem;">
+                    <div>
+                        <h2 style="font-family:'Outfit',sans-serif; font-size:18px;">Inspection History</h2>
+                        <p style="font-size:12px; color:var(--text-secondary); margin-top:2px;">All completed agentic vision investigations</p>
+                    </div>
+                    <span id="history-count-badge" style="font-size:12px; color:var(--text-muted);">0 inspections</span>
+                </div>
+                <div id="cv-history-list" style="padding:1.5rem; display:flex; flex-direction:column; gap:10px; overflow-y:auto; max-height:calc(100vh-120px);">
+                    <div style="color:var(--text-muted); text-align:center; padding:2rem; font-size:13px;">No inspection history yet. Run your first analysis above.</div>
+                </div>
+            </div>
+
+            <!-- ══════════════════════════════════════════════════
+                 VIEW: AI ASSISTANT (Secondary)
+                 ══════════════════════════════════════════════════ -->
+            <div id="view-chat-main" class="main-view hidden-view">
+                <div class="chat-messages-area" id="chat-messages-area">
+                    <div id="chat-empty-state" class="empty-state">
+                        <div class="empty-shield">
+                            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" style="width:40px;height:40px;">
+                                <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/>
+                            </svg>
+                        </div>
+                        <h2 class="empty-state-title">Guardian CV — AI Assistant</h2>
+                        <p class="empty-state-subtitle">Ask questions about visual inspection, computer vision, or anomaly analysis.</p>
+                        <div class="suggestion-chips">
+                            <button class="suggestion-chip" data-prompt="Explain how ORB feature matching works for image registration in industrial inspection.">
+                                <span>🔍</span><span>ORB Feature Matching</span>
+                            </button>
+                            <button class="suggestion-chip" data-prompt="What is the Bhattacharyya distance and how does it help in surface defect verification?">
+                                <span>📐</span><span>Bhattacharyya Distance</span>
+                            </button>
+                            <button class="suggestion-chip" data-prompt="Describe the adaptive closed-loop vision inspection agent architecture.">
+                                <span>🤖</span><span>Agent Architecture</span>
+                            </button>
+                            <button class="suggestion-chip" data-prompt="How does RANSAC improve homography estimation for visual change detection?">
+                                <span>🧮</span><span>RANSAC Homography</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="messages-list" class="messages-list"></div>
+                </div>
+                <div id="thinking-indicator" class="thinking-bar hidden">
+                    <div id="thinking-steps-list" class="thinking-steps"></div>
+                </div>
+                <div id="classification-warning-banner" class="classification-banner hidden"></div>
+                <div class="chat-input-container">
+                    <textarea id="chat-prompt-input" class="chat-input-textarea" placeholder="Ask about visual inspection, computer vision techniques..." rows="1"></textarea>
+                    <div class="chat-input-action-bar">
+                        <button id="btn-attach-file" class="input-tool-btn" title="Attach file">
+                            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                            <input type="file" id="file-input-hidden" style="display:none;">
+                        </button>
+                        <div class="input-controls-group">
+                            <select id="chat-task-category" class="chat-select">
+                                <option value="RESEARCH" selected>Computer Vision Research</option>
+                                <option value="CODE">Write CV Code</option>
+                                <option value="DRAFTING">Draft Report</option>
+                                <option value="DATA_ANALYSIS">Data Analysis</option>
+                            </select>
+                            <select id="chat-data-classification" class="chat-select">
+                                <option value="Public" selected>Classification: Public</option>
+                                <option value="Internal">Classification: Internal</option>
+                                <option value="Sensitive">Classification: Confidential</option>
+                                <option value="Restricted">Classification: Restricted</option>
+                            </select>
+                            <select id="chat-priority" class="chat-select">
+                                <option value="Normal" selected>Priority: Normal</option>
+                                <option value="Urgent">Priority: Urgent</option>
+                            </select>
+                        </div>
+                        <div class="token-status" id="chat-token-status">~10,000 tokens remaining</div>
+                        <button id="btn-send-message" class="btn-send-orange" title="Send message">
+                            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══════════════════════════════════════════════════
+                 VIEW: ESCALATIONS
+                 ══════════════════════════════════════════════════ -->
+            <div id="view-escalations" class="main-view hidden-view">
+                <div class="full-view-header">
+                    <h2>Escalations <span class="header-badge" id="escalation-header-count">0 pending review</span></h2>
+                </div>
+                <div class="escalations-page-list" id="escalations-page-container"></div>
+            </div>
+
+            <!-- ══════════════════════════════════════════════════
+                 VIEW: AUDIT LEDGER
+                 ══════════════════════════════════════════════════ -->
+            <div id="view-ledger" class="main-view hidden-view">
+                <div class="full-view-header">
+                    <h2>Audit Ledger <span class="sub-info" id="ledger-stats-text">0 blocks verified</span></h2>
+                </div>
+                <div class="ledger-page-blocks" id="ledger-page-list"></div>
+            </div>
+
+            <!-- ══════════════════════════════════════════════════
+                 VIEW: ADMIN PANEL
+                 ══════════════════════════════════════════════════ -->
+            <div id="view-admin" class="main-view hidden-view">
+                <div class="full-view-header">
+                    <h2>Admin Panel <span class="role-pill role-exec" id="admin-view-role-pill">EXEC</span></h2>
+                </div>
+                <div class="admin-layout-box">
+                    <div class="admin-side-tabs">
+                        <button class="admin-side-tab active" data-admintab="admintab-apikeys">API Keys</button>
+                        <button class="admin-side-tab" data-admintab="admintab-models">Models</button>
+                        <button class="admin-side-tab" data-admintab="admintab-groups">Groups</button>
+                        <button class="admin-side-tab" data-admintab="admintab-roles">Roles & Permissions</button>
+                        <button class="admin-side-tab" data-admintab="admintab-budget">Budget</button>
+                        <button class="admin-side-tab" data-admintab="admintab-users">Users</button>
+                        <button class="admin-side-tab" data-admintab="admintab-health">System Health</button>
+                        <button class="admin-side-tab" data-admintab="admintab-datascanner">Data Scanner</button>
+                    </div>
+                    <div class="admin-tab-body">
+                        <div id="admintab-apikeys" class="admintab-content active">
+                            <div class="admin-section-title">Provider API Key Registrations</div>
+                            <div class="api-keys-grid" id="api-keys-list"></div>
+                        </div>
+                        <div id="admintab-models" class="admintab-content">
+                            <div class="admin-section-title">Model Registry & File Access Governance</div>
+                            <table style="width:100%; border-collapse:collapse; font-size:0.8rem;">
+                                <thead><tr style="text-align:left; border-bottom:1px solid #2a2a2a; color:var(--text-muted);">
+                                    <th style="padding:0.5rem;">Name</th><th>Provider</th><th>Type</th><th>Group</th>
+                                    <th>Cost / 1M</th><th>File Access</th><th>Tags</th><th>Ops</th><th>Status</th>
+                                </tr></thead>
+                                <tbody id="admin-models-tbody"></tbody>
+                            </table>
+                        </div>
+                        <div id="admintab-groups" class="admintab-content">
+                            <div class="admin-section-title">Model Group Configuration & Tool Boundaries</div>
+                            <div id="admin-groups-list"></div>
+                        </div>
+                        <div id="admintab-roles" class="admintab-content">
+                            <div class="admin-section-title">Role Permissions Matrix</div>
+                            <div id="admin-roles-list"></div>
+                        </div>
+                        <div id="admintab-budget" class="admintab-content">
+                            <div class="admin-section-title">Team Budget Pools & Org Ceiling</div>
+                            <div id="admin-budget-list"></div>
+                        </div>
+                        <div id="admintab-users" class="admintab-content">
+                            <div class="admin-section-title">User Accounts & Budget Caps</div>
+                            <table style="width:100%; border-collapse:collapse; font-size:0.8rem;">
+                                <thead><tr style="text-align:left; border-bottom:1px solid #2a2a2a; color:var(--text-muted);">
+                                    <th style="padding:0.5rem;">User</th><th>Role</th><th>Department</th>
+                                    <th>Wallet Usage</th><th>Status</th><th>Action</th>
+                                </tr></thead>
+                                <tbody id="admin-users-list-tbody"></tbody>
+                            </table>
+                        </div>
+                        <div id="admintab-health" class="admintab-content">
+                            <div class="admin-section-title">System Health & Telemetry Metrics</div>
+                            <div id="admin-health-metrics"></div>
+                        </div>
+                        <div id="admintab-datascanner" class="admintab-content">
+                            <div class="admin-section-title">Content-Aware Document Scanner</div>
+                            <div class="glass-card" style="padding:1.25rem; margin-bottom:1.5rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:8px;">
+                                <div style="display:flex; gap:1rem; align-items:center; margin-bottom:1rem;">
+                                    <input type="text" id="scan-folder-path" class="text-input" placeholder="/data/legacy_docs" value="/data/legacy_docs" style="flex:1; padding:0.5rem 0.75rem; background:#18181b; border:1px solid #27272a; border-radius:4px; color:#fff;">
+                                    <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; color:var(--text-muted); cursor:pointer;">
+                                        <input type="checkbox" id="scan-dry-run" checked> Dry Run
+                                    </label>
+                                    <button id="btn-start-scan" class="btn-primary" style="padding:0.5rem 1.25rem; background:#3b82f6; border:none; border-radius:4px; color:#fff; font-weight:600; cursor:pointer;">Start Scan</button>
+                                </div>
+                                <div id="scan-progress-box" class="hidden" style="margin-top:1rem;">
+                                    <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-muted); margin-bottom:0.4rem;">
+                                        <span id="scan-status-text">Scanning...</span>
+                                        <span id="scan-counts-text">Processed: 0 / 0</span>
+                                    </div>
+                                    <div style="width:100%; height:8px; background:#27272a; border-radius:4px; overflow:hidden;">
+                                        <div id="scan-progress-bar" style="width:0%; height:100%; background:#3b82f6; transition:width 0.3s;"></div>
+                                    </div>
+                                    <div style="display:flex; gap:1.5rem; font-size:0.8rem; margin-top:0.6rem; color:var(--text-secondary);">
+                                        <span>Cached: <strong id="scan-stat-cached">0</strong></span>
+                                        <span>New: <strong id="scan-stat-new">0</strong></span>
+                                        <span>Failed: <strong id="scan-stat-failed">0</strong></span>
+                                        <span style="flex:1; text-align:right;">Last: <span id="scan-stat-last">-</span></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <table style="width:100%; border-collapse:collapse; font-size:0.8rem;">
+                                <thead><tr style="text-align:left; border-bottom:1px solid #2a2a2a; color:var(--text-muted);">
+                                    <th style="padding:0.5rem;">File Path</th><th>Category</th>
+                                    <th>Guardian Tag</th><th>Cache</th><th>Last Scanned</th>
+                                </tr></thead>
+                                <tbody id="admin-scanner-tbody">
+                                    <tr><td colspan="5" style="padding:1rem; text-align:center; color:var(--text-muted);">No scan results yet.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- ─────────────── RIGHT: TELEMETRY (collapsed by default on CV) ─────────────── -->
+        <aside id="sidebar-right" class="swarm-panel" style="display:none;">
+            <div class="swarm-tabs">
+                <button class="swarm-tab-btn active" data-tab="tab-swarm-trace">Gate Trace</button>
+                <button class="swarm-tab-btn" data-tab="tab-swarm-agents">Groups</button>
+            </div>
+            <div class="swarm-content">
+                <div id="tab-swarm-trace" class="swarm-tab-content active">
+                    <div class="swarm-header-row">
+                        <span class="swarm-title">Live Gate Trace</span>
+                        <span class="status-pill pill-idle" id="swarm-status-pill">IDLE</span>
+                    </div>
+                    <div id="swarm-idle-view" class="swarm-idle-view">
+                        <div class="idle-text">Telemetry updates when tasks are submitted.</div>
+                        <div class="session-stats-box">
+                            <div class="stat-row"><span>Tasks Processed:</span> <strong id="stat-tasks-completed">0</strong></div>
+                            <div class="stat-row"><span>Tokens Allocated:</span> <strong id="stat-tokens-used">0</strong></div>
+                            <div class="stat-row"><span>Security Checks:</span> <strong id="stat-gate-interventions">0</strong></div>
+                        </div>
+                        <div class="session-stats-box" style="margin-top:0.75rem;">
+                            <div style="font-weight:600; font-size:0.75rem; color:var(--text-muted); margin-bottom:0.4rem; text-transform:uppercase;">Classification Summary</div>
+                            <div class="stat-row"><span>Total Classified:</span> <strong id="stat-total-classified">0</strong></div>
+                            <div class="stat-row"><span>PUBLIC / INTERNAL:</span> <strong id="stat-public-internal">0 / 0</strong></div>
+                            <div class="stat-row"><span>CONFIDENTIAL / RESTRICTED:</span> <strong id="stat-confidential-restricted">0 / 0</strong></div>
+                            <div class="stat-row"><span>Scanner Errors:</span> <strong id="stat-scanner-errors" style="color:#ef4444;">0</strong></div>
+                        </div>
+                    </div>
+                    <div id="agent-cards-container"></div>
+                    <div id="gate-trace-accordion"></div>
+                </div>
+                <div id="tab-swarm-agents" class="swarm-tab-content">
+                    <div class="swarm-header-row">
+                        <span class="swarm-title">Model Groups & Scope</span>
+                    </div>
+                    <div id="agent-groups-info-list"></div>
+                </div>
+            </div>
+            <button id="btn-toggle-right-sidebar" class="sidebar-collapse-btn right-collapse" title="Toggle Telemetry Panel">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+        </aside>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         SETTINGS MODAL
+         ═══════════════════════════════════════════════════════ -->
+    <div id="settings-modal" class="modal-overlay hidden">
+        <div class="settings-modal-box" style="width: 720px; max-width: 95vw;">
+            <div class="modal-header">
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                    <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+                    <h3 style="font-size:1.1rem; font-weight:700;">Guardian CV Settings</h3>
+                </div>
+                <button id="close-settings-btn" class="close-btn">&times;</button>
+            </div>
+            <div class="settings-layout">
+                <div class="settings-nav">
+                    <button class="settings-nav-btn active" data-tab="general"><span>⚙️</span> General</button>
+                    <button class="settings-nav-btn" data-tab="security"><span>🔑</span> Security & API Keys</button>
+                    <button class="settings-nav-btn" data-tab="models"><span>🧠</span> Model Engine</button>
+                </div>
+                <div class="settings-body">
+                    <!-- GENERAL TAB -->
+                    <div id="settings-tab-general" class="settab-content active">
+                        <h4 style="font-size:0.95rem; font-weight:700; color:#fff; margin-bottom:0.6rem;">General Workspace Settings</h4>
+                        <div class="glass-card" style="padding:0.9rem 1.1rem; margin-bottom:1.2rem; background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.2); border-radius:8px;">
+                            <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.82rem; font-weight:600; color:#4ade80; margin-bottom:0.3rem;">
+                                <span>●</span> <span>Guardian CV Vision Engine Operational</span>
+                            </div>
+                            <p style="font-size:0.78rem; color:var(--text-secondary); line-height:1.4;">
+                                Guardian CV is active with OpenCV 5. The adaptive closed-loop inspection agent runs locally. <strong>No API keys are required for vision inspection.</strong>
+                            </p>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:1rem;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:0.8rem; border-bottom:1px solid #222;">
+                                <div>
+                                    <div style="font-size:0.85rem; font-weight:600; color:#fff;">UI Theme</div>
+                                    <div style="font-size:0.75rem; color:var(--text-muted);">Customize workspace visual mode</div>
+                                </div>
+                                <select id="setting-ui-theme" class="top-select-dropdown" style="padding:0.3rem 0.6rem;">
+                                    <option value="dark" selected>Dark Glassmorphism (Default)</option>
+                                    <option value="cyberpunk">Cyberpunk High Contrast</option>
+                                </select>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:0.8rem; border-bottom:1px solid #222;">
+                                <div>
+                                    <div style="font-size:0.85rem; font-weight:600; color:#fff;">Cryptographic Audit Chain</div>
+                                    <div style="font-size:0.75rem; color:var(--text-muted);">Verify SHA-256 tamper-evident audit ledger</div>
+                                </div>
+                                <button type="button" class="btn btn-secondary btn-mini" onclick="window.runLedgerVerification && window.runLedgerVerification()">🔍 Verify Ledger</button>
+                            </div>
+                            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.5rem; line-height:1.4;">
+                                Guardian CV Version: <strong>1.0.0</strong> · OpenCV: <strong id="settings-cv-ver">5.0.0</strong> · Build: <strong>OpenCV 2026</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- SECURITY TAB -->
+                    <div id="settings-tab-security" class="settab-content hidden">
+                        <h4 style="font-size:0.95rem; font-weight:700; color:#fff; margin-bottom:0.6rem;">Security & Cloud API Keys</h4>
+                        <div class="glass-card" style="padding:0.9rem 1.1rem; margin-bottom:1.2rem; background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.2); border-radius:8px;">
+                            <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.82rem; font-weight:600; color:#60a5fa; margin-bottom:0.3rem;">
+                                <span>ℹ️</span> <span>Are API Keys Required?</span>
+                            </div>
+                            <p style="font-size:0.78rem; color:var(--text-secondary); line-height:1.4;">
+                                <strong>No!</strong> Guardian CV vision inspection works 100% out-of-the-box using the built-in OpenCV 5 engine. API keys are optional for LLM-powered analysis in the AI Assistant.
+                            </p>
+                        </div>
+                        <div id="modal-apikeys-container"></div>
+                    </div>
+                    <!-- MODEL ENGINE TAB -->
+                    <div id="settings-tab-models" class="settab-content hidden">
+                        <h4 style="font-size:0.95rem; font-weight:700; color:#fff; margin-bottom:0.6rem;">Model Verification Engine</h4>
+                        <div class="glass-card" style="padding:0.9rem 1.1rem; margin-bottom:1.2rem; background:rgba(249,115,22,0.08); border:1px solid rgba(249,115,22,0.2); border-radius:8px;">
+                            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.4rem;">
+                                <span style="font-size:0.82rem; font-weight:600; color:var(--color-orange);">Current Active Engine</span>
+                                <span id="modal-engine-badge" class="badge badge-success">HEURISTICS ENGINE</span>
+                            </div>
+                            <p style="font-size:0.78rem; color:var(--text-secondary); line-height:1.4;">Automatic fallback mode active. Vision engine latency ~0 ms, zero token cost.</p>
+                        </div>
+                        <div style="margin-bottom:1rem;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem;">
+                                <span style="font-size:0.85rem; font-weight:600; color:#fff;">Local Server Auto-Discovery</span>
+                                <button type="button" class="btn btn-primary btn-mini" onclick="scanLocalModelServers()">🔄 Scan (Ollama / LM Studio)</button>
+                            </div>
+                            <div id="modal-model-scan-results" style="font-size:0.78rem; color:var(--text-muted); padding:0.6rem; background:#0f0f10; border:1px solid #222; border-radius:6px;">
+                                Click scan to probe for Ollama (11434), LM Studio (1234), or vLLM (8000).
+                            </div>
+                        </div>
+                        <div style="margin-top:1.2rem;">
+                            <div style="font-size:0.85rem; font-weight:600; color:#fff; margin-bottom:0.6rem;">Registered Model Registry</div>
+                            <div id="modal-registered-models-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RAW LEDGER PROOF MODAL -->
+    <div id="ledger-modal" class="modal-overlay hidden">
+        <div class="settings-modal-box" style="width: 550px;">
+            <div class="modal-header">
+                <h3>Cryptographic Block Proof</h3>
+                <button id="close-ledger-modal-btn" class="close-btn">&times;</button>
+            </div>
+            <div style="padding:1.2rem;">
+                <div class="fira-code-box" id="raw-ledger-json"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/api.js') }}?v=4.2.0"></script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}?v=4.2.0"></script>
+    <script src="{{ url_for('static', filename='js/admin.js') }}?v=4.2.0"></script>
+    <script src="{{ url_for('static', filename='js/cv_inspector.js') }}?v=2.1.0"></script>
+
+    <script>
+    // ─── Guardian CV Navigation System ───────────────────────────────
+    (function() {
+        function switchView(viewId) {
+            document.querySelectorAll('.main-view').forEach(v => {
+                v.classList.remove('active');
+                v.classList.add('hidden-view');
+            });
+            const target = document.getElementById('view-' + viewId);
+            if (target) {
+                target.classList.remove('hidden-view');
+                target.classList.add('active');
+            }
+            document.querySelectorAll('.cv-nav-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.view === viewId);
+            });
+
+            // Show/hide right sidebar (hide on CV inspector view)
+            const rightSidebar = document.getElementById('sidebar-right');
+            if (rightSidebar) {
+                rightSidebar.style.display = (viewId === 'cv-inspector') ? 'none' : 'flex';
+            }
+        }
+
+        document.querySelectorAll('.cv-nav-item[data-view]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const viewId = this.dataset.view;
+                switchView(viewId);
+                if (viewId === 'cv-history' && window.loadCvHistory) {
+                    window.loadCvHistory();
+                } else if (viewId === 'escalations' && window.fetchEscalationsPage) {
+                    window.fetchEscalationsPage();
+                } else if (viewId === 'ledger' && window.fetchLedgerPage) {
+                    window.fetchLedgerPage();
+                } else if (viewId === 'admin' && window.renderAdminPanel) {
+                    window.renderAdminPanel();
+                }
+            });
+        });
+
+        // "New Inspection" resets and navigates to inspector
+        const btnNewInspection = document.getElementById('btn-new-inspection');
+        if (btnNewInspection) {
+            btnNewInspection.addEventListener('click', function() {
+                switchView('cv-inspector');
+                // Reset inspection state
+                document.getElementById('ref-placeholder').style.display = 'flex';
+                document.getElementById('ref-preview-box').style.display = 'none';
+                document.getElementById('curr-placeholder').style.display = 'flex';
+                document.getElementById('curr-preview-box').style.display = 'none';
+                document.getElementById('cv-evidence-placeholder').style.display = 'flex';
+                document.getElementById('cv-evidence-img').style.display = 'none';
+                document.getElementById('cv-trace-timeline').innerHTML = '<div style="color:var(--text-muted); font-size:11px; font-family:var(--font-mono);">(Trace populates as OpenCV 5 tools execute)</div>';
+                document.getElementById('cv-verdict-title').textContent = 'Awaiting Inspection';
+                document.getElementById('cv-verdict-title').style.color = '#fff';
+                document.getElementById('cv-verdict-summary').textContent = 'Autonomous closed-loop agent stands ready to observe and verify visual evidence.';
+                document.getElementById('cv-spectral-row').style.display = 'none';
+                document.getElementById('cv-metrics-row').style.display = 'none';
+            });
+        }
+
+        // Right panel tabs
+        document.querySelectorAll('.cv-right-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabId = this.dataset.rtab;
+                document.querySelectorAll('.cv-right-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('rtab-trace').style.display = tabId === 'trace' ? 'flex' : 'none';
+                document.getElementById('rtab-regions').style.display = tabId === 'regions' ? 'block' : 'none';
+            });
+        });
+
+        // Load CV history
+        window.loadCvHistory = async function() {
+            try {
+                const res = await fetch('/api/cv/history');
+                const data = await res.json();
+                const list = document.getElementById('cv-history-list');
+                const badge = document.getElementById('nav-history-count');
+                const countBadge = document.getElementById('history-count-badge');
+
+                if (!data.inspections || data.inspections.length === 0) {
+                    list.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:2rem; font-size:13px;">No inspection history yet. Run your first analysis.</div>';
+                    if (badge) { badge.style.display = 'none'; }
+                    if (countBadge) countBadge.textContent = '0 inspections';
+                    return;
+                }
+
+                if (badge) {
+                    badge.style.display = 'inline-block';
+                    badge.textContent = data.inspections.length;
+                }
+                if (countBadge) countBadge.textContent = data.inspections.length + ' inspections';
+
+                list.innerHTML = data.inspections.map(item => {
+                    const verdictColor = item.verdict === 'CONFIRMED_ANOMALY' ? '#ef4444' : item.verdict === 'NOMINAL_NO_CHANGE' ? '#22c55e' : '#f59e0b';
+                    return `<div class="cv-history-item">
+                        <div class="cv-history-id">${item.id}</div>
+                        <div class="cv-history-verdict" style="color:${verdictColor};">${item.verdict}</div>
+                        <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">${item.summary || ''}</div>
+                        <div class="cv-history-time">${new Date(item.timestamp).toLocaleString()} · ${item.total_regions || 0} regions · Operator: ${item.operator}</div>
+                    </div>`;
+                }).join('');
+            } catch(e) {
+                console.error('Failed to load CV history:', e);
+            }
+        };
+
+        // Populate runtime info on sidebar
+        (async function fetchRuntimeSidebar() {
+            try {
+                const res = await fetch('/api/cv/runtime');
+                const data = await res.json();
+                if (data.opencv) {
+                    const verEl = document.getElementById('sidebar-cv-version');
+                    const settingsVer = document.getElementById('settings-cv-ver');
+                    if (verEl) verEl.textContent = data.opencv.opencv_version;
+                    if (settingsVer) settingsVer.textContent = data.opencv.opencv_version;
+                    const engineText = document.getElementById('cv-engine-status-text');
+                    if (engineText) engineText.textContent = `👁 OpenCV ${data.opencv.opencv_version} Active`;
+                }
+                if (data.aws) {
+                    const awsEl = document.getElementById('sidebar-aws-status');
+                    const awsBadge = document.getElementById('cv-aws-badge');
+                    if (awsEl) awsEl.textContent = data.aws.is_connected ? 'S3 Live' : 'Sandboxed';
+                    if (awsEl) awsEl.style.color = data.aws.is_connected ? '#22c55e' : '#f59e0b';
+                    if (awsBadge) {
+                        awsBadge.innerHTML = `<span class="cv-badge-dot"></span>${data.aws.is_connected ? 'AWS: S3 Live Vault' : 'AWS: Sandboxed'}`;
+                        awsBadge.className = `cv-badge ${data.aws.is_connected ? 'cv-badge-green' : 'cv-badge-orange'}`;
+                    }
+                }
+            } catch(e) { /* silent */ }
+        })();
+
+        // Start on cv-inspector view (already active in HTML, just ensure right sidebar hidden)
+        const rightSidebar = document.getElementById('sidebar-right');
+        if (rightSidebar) rightSidebar.style.display = 'none';
+
+        // Load history count in background
+        fetch('/api/cv/history').then(r => r.json()).then(data => {
+            if (data.inspections && data.inspections.length > 0) {
+                const badge = document.getElementById('nav-history-count');
+                if (badge) { badge.style.display = 'inline-block'; badge.textContent = data.inspections.length; }
+            }
+        }).catch(() => {});
+
+    })();
+    </script>
+</body>
+</html>

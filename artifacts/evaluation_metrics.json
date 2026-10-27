@@ -1,0 +1,164 @@
+{
+  "timestamp": 1793026339.8379817,
+  "opencv_version": "5.0.0",
+  "metrics": {
+    "baseline": {
+      "precision": 0.75,
+      "recall": 1.0,
+      "false_positive_rate": 0.2,
+      "avg_latency": 0.0017
+    },
+    "adaptive_agent": {
+      "precision": 1.0,
+      "recall": 0.6667,
+      "false_positive_rate": 0.0,
+      "avg_latency": 0.0598
+    }
+  },
+  "trials": [
+    {
+      "case": "normal",
+      "ground_truth": false,
+      "predicted_defect": false,
+      "verdict": "NOMINAL_NO_CHANGE",
+      "status": "VERIFIED_NORMAL",
+      "trace_steps": 4,
+      "latency": 0.5835776329040527
+    },
+    {
+      "case": "normal",
+      "ground_truth": false,
+      "predicted_defect": false,
+      "verdict": "NOMINAL_NO_CHANGE",
+      "status": "VERIFIED_NORMAL",
+      "trace_steps": 4,
+      "latency": 0.020135879516601562
+    },
+    {
+      "case": "normal",
+      "ground_truth": false,
+      "predicted_defect": false,
+      "verdict": "NOMINAL_NO_CHANGE",
+      "status": "VERIFIED_NORMAL",
+      "trace_steps": 4,
+      "latency": 0.02154397964477539
+    },
+    {
+      "case": "normal",
+      "ground_truth": false,
+      "predicted_defect": false,
+      "verdict": "NOMINAL_NO_CHANGE",
+      "status": "VERIFIED_NORMAL",
+      "trace_steps": 4,
+      "latency": 0.019774913787841797
+    },
+    {
+      "case": "normal",
+      "ground_truth": false,
+      "predicted_defect": false,
+      "verdict": "NOMINAL_NO_CHANGE",
+      "status": "VERIFIED_NORMAL",
+      "trace_steps": 4,
+      "latency": 0.02300238609313965
+    },
+    {
+      "case": "structural_defect",
+      "ground_truth": true,
+      "predicted_defect": true,
+      "verdict": "CONFIRMED_ANOMALY",
+      "status": "COMPLETED",
+      "trace_steps": 5,
+      "latency": 0.07824182510375977
+    },
+    {
+      "case": "structural_defect",
+      "ground_truth": true,
+      "predicted_defect": true,
+      "verdict": "CONFIRMED_ANOMALY",
+      "status": "COMPLETED",
+      "trace_steps": 5,
+      "latency": 0.024314165115356445
+    },
+    {
+      "case": "structural_defect",
+      "ground_truth": true,
+      "predicted_defect": true,
+      "verdict": "CONFIRMED_ANOMALY",
+      "status": "COMPLETED",
+      "trace_steps": 5,
+      "latency": 0.024060726165771484
+    },
+    {
+      "case": "structural_defect",
+      "ground_truth": true,
+      "predicted_defect": true,
+      "verdict": "CONFIRMED_ANOMALY",
+      "status": "COMPLETED",
+      "trace_steps": 5,
+      "latency": 0.022647380828857422
+    },
+    {
+      "case": "lighting_variation",
+      "ground_truth": false,
+      "predicted_defect": false,
+      "verdict": "NOMINAL_NO_CHANGE",
+      "status": "VERIFIED_NORMAL",
+      "trace_steps": 4,
+      "latency": 0.0202939510345459
+    },
+    {
+      "case": "lighting_variation",
+      "ground_truth": false,
+      "predicted_defect": false,
+      "verdict": "NOMINAL_NO_CHANGE",
+      "status": "VERIFIED_NORMAL",
+      "trace_steps": 4,
+      "latency": 0.02102184295654297
+    },
+    {
+      "case": "lighting_variation",
+      "ground_truth": false,
+      "predicted_defect": false,
+      "verdict": "NOMINAL_NO_CHANGE",
+      "status": "VERIFIED_NORMAL",
+      "trace_steps": 4,
+      "latency": 0.020025014877319336
+    },
+    {
+      "case": "misalignment",
+      "ground_truth": true,
+      "predicted_defect": false,
+      "verdict": "AMBIGUOUS_POTENTIAL_LIGHTING_ARTIFACT",
+      "status": "PENDING_HUMAN_APPROVAL",
+      "trace_steps": 5,
+      "latency": 0.03458976745605469
+    },
+    {
+      "case": "misalignment",
+      "ground_truth": true,
+      "predicted_defect": false,
+      "verdict": "AMBIGUOUS_POTENTIAL_LIGHTING_ARTIFACT",
+      "status": "PENDING_HUMAN_APPROVAL",
+      "trace_steps": 5,
+      "latency": 0.03401446342468262
+    },
+    {
+      "case": "severe_blur",
+      "ground_truth": false,
+      "predicted_defect": false,
+      "verdict": "INSUFFICIENT_QUALITY",
+      "status": "CONCLUDED_WITH_LIMITATION",
+      "trace_steps": 2,
+      "latency": 0.0049953460693359375
+    },
+    {
+      "case": "severe_blur",
+      "ground_truth": false,
+      "predicted_defect": false,
+      "verdict": "INSUFFICIENT_QUALITY",
+      "status": "CONCLUDED_WITH_LIMITATION",
+      "trace_steps": 2,
+      "latency": 0.004938602447509766
+    }
+  ]
+}
