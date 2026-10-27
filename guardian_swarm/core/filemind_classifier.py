@@ -13,7 +13,10 @@ import subprocess
 from pathlib import Path
 from datetime import datetime, timezone, timedelta
 from typing import Dict, Any, List, Optional, Tuple
-import yaml
+try:
+    import yaml
+except ImportError:
+    yaml = None
 
 from guardian_swarm.utils.paths import PROJECT_ROOT
 from guardian_swarm.utils.database import SessionLocal, FileMindCacheModel
@@ -127,7 +130,7 @@ class FileMindClassifier:
         self.executable = self._locate_executable()
 
     def _load_mapping(self) -> Dict[str, str]:
-        if self.config_path.exists():
+        if self.config_path.exists() and yaml is not None:
             try:
                 with open(self.config_path, "r", encoding="utf-8") as f:
                     data = yaml.safe_load(f) or {}
